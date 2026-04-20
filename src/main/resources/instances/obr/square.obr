@@ -1,0 +1,13 @@
+NAME : square
+COMMENT : square by warren g. jackson
+BUS_DEPOT_LOCATION
+0 0
+POINTS_OF_INTEREST
+0 5
+5 0
+10 0
+10 5
+10 10
+5 10
+0 10
+EOF

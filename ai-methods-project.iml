@@ -7,5 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="HyFlex_1.0.1_WallTimer_v2" level="project" />
   </component>
 </module>
