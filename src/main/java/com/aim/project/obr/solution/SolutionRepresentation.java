@@ -7,36 +7,29 @@ import com.aim.project.obr.interfaces.SolutionRepresentationInterface;
  * @since 1.0.0 (15/03/2026)
  */
 public class SolutionRepresentation implements SolutionRepresentationInterface {
+    private int[] OBR_representation;
 
 	public SolutionRepresentation(int[] aiRepresentation) {
-
-        // TODO
+        this.OBR_representation = aiRepresentation;
 	}
 
 	@Override
 	public int[] getSolutionRepresentation() {
-
-        // TODO
-        return null;
+        return OBR_representation;
 	}
 
 	@Override
 	public void setSolutionRepresentation(int[] aiSolutionRepresentation) {
-
-        // TODO
+        OBR_representation = aiSolutionRepresentation;
 	}
 
 	@Override
 	public int getTotalNumberOfLocations() {
-
-        // TODO
-        return -1;
+        return OBR_representation.length;
 	}
 
 	@Override
 	public SolutionRepresentationInterface clone() {
-
-        // TODO
-        return null;
+        return new SolutionRepresentation(OBR_representation.clone());
 	}
 }

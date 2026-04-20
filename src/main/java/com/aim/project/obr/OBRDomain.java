@@ -1,22 +1,39 @@
 package com.aim.project.obr;
 
+import com.aim.project.obr.heuristics.*;
 import com.aim.project.obr.instance.Location;
 import com.aim.project.obr.interfaces.*;
 
 import AbstractClasses.ProblemDomain;
+
+import java.util.Random;
 
 /**
  * @author Warren G Jackson
  * @since 1.0.0 (15/03/2026)
  */
 public class OBRDomain extends ProblemDomain implements Visualisable, InLabPracticalExamInterface {
+    private HeuristicOperators[] heuristics;
+    private CrossoverHeuristicInterface[] crossoverHeuristics;
 
     public OBRDomain(long lSeed) {
 
 		super(lSeed);
+        //Create heuristics
+        this.heuristics = new HeuristicOperators[4];
 
-        // TODO
-        //  recommend to create the heuristics here
+        heuristics[0] = new AdjacentSwap(rng);
+        heuristics[1] = new Reinsertion(rng);
+        heuristics[2] = new NextDescent(rng);
+        heuristics[3] = new DavissHillClimbing(rng);
+
+        this.crossoverHeuristics = new CrossoverHeuristicInterface[1];
+        crossoverHeuristics[0] = new PartiallyMappedCrossover(rng);
+        
+
+
+
+
 	}
 	
 	@Override

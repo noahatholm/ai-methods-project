@@ -55,44 +55,5 @@ public class OBRInstanceReader implements OBRInstanceReaderInterface {
             System.out.println("Error reading file");
             return null;
         }
-
-
-
-
-    }
-
-    public static void main(String[] args) {
-        System.out.println("--- Testing OBRInstanceReader ---");
-
-        // 1. Construct the path to the square.obr file
-        // Note: You may need to import java.nio.file.Paths and java.nio.file.Path at the top of the file
-        java.nio.file.Path path = java.nio.file.Paths.get("src", "main", "resources", "instances", "obr", "chatgpt-instance-100-PoIs.obr");
-
-        System.out.println("Attempting to read file at: " + path.toAbsolutePath());
-
-        // 2. Instantiate the reader
-        OBRInstanceReader reader = new OBRInstanceReader();
-
-        // 3. Call the method with a seeded random number generator
-        com.aim.project.obr.interfaces.OBRInstanceInterface instance =
-            reader.readOBRInstanceFile(path, new java.util.Random(12345L));
-
-        // 4. Verify the results
-        if (instance != null) {
-            System.out.println("\nFile parsed successfully!");
-            System.out.println("Total Locations (including depot): " + instance.getNumberOfLocations());
-
-            com.aim.project.obr.instance.Location depot = instance.getLocationOfBusDepot();
-            System.out.println("Depot Location: (" + depot.x() + ", " + depot.y() + ")");
-
-            System.out.println("Points of Interest:");
-            // We loop from 0 to Total Locations - 2 because the depot isn't included in the PoI list
-            for (int i = 0; i < instance.getNumberOfLocations() - 1; i++) {
-                com.aim.project.obr.instance.Location poi = instance.getLocationForPoI(i);
-                System.out.println("  PoI " + i + ": (" + poi.x() + ", " + poi.y() + ")");
-            }
-        } else {
-            System.out.println("\nReader returned null. Make sure you have implemented readOBRInstanceFile!");
-        }
     }
 }
