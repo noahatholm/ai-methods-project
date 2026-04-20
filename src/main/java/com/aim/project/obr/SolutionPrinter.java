@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr;
+package com.aim.project.obr;
 
 
 import java.io.FileNotFoundException;

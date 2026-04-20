@@ -1,7 +1,7 @@
-package main.java.com.aim.project.obr.runners;
+package com.aim.project.obr.runners;
 
 
-import main.java.com.aim.project.obr.hyperheuristics.SR_IE_HH;
+import com.aim.project.obr.hyperheuristics.SR_IE_HH;
 
 import AbstractClasses.HyperHeuristic;
 

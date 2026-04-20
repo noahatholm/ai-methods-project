@@ -1,12 +1,12 @@
-package main.java.com.aim.project.obr.heuristics;
+package com.aim.project.obr.heuristics;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import main.java.com.aim.project.obr.interfaces.CrossoverHeuristicInterface;
-import main.java.com.aim.project.obr.interfaces.OBRSolutionInterface;
-import main.java.com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
+import com.aim.project.obr.interfaces.CrossoverHeuristicInterface;
+import com.aim.project.obr.interfaces.OBRSolutionInterface;
+import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 import com.aim.project.obr.solution.OBRSolution;
 
 /**

@@ -28,3 +28,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Project ###
+src/main/java/com/aim/project/obr/interfaces/

@@ -1,14 +1,14 @@
-package main.java.com.aim.project.obr.instance;
+package com.aim.project.obr.instance;
 
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import main.java.com.aim.project.obr.OBRObjectiveFunction;
-import main.java.com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
-import main.java.com.aim.project.obr.interfaces.OBRInstanceInterface;
-import main.java.com.aim.project.obr.interfaces.OBRSolutionInterface;
-import main.java.com.aim.project.obr.solution.OBRSolution;
+import com.aim.project.obr.OBRObjectiveFunction;
+import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
+import com.aim.project.obr.interfaces.OBRInstanceInterface;
+import com.aim.project.obr.interfaces.OBRSolutionInterface;
+import com.aim.project.obr.solution.OBRSolution;
 
 /**
  * @author Warren G Jackson
@@ -47,23 +47,17 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 
 	@Override
 	public int getNumberOfLocations() {
-
-        // TODO
-        return -1;
+        return m_iNumberOfLocations;
 	}
 
 	@Override
 	public Location getLocationForPoI(int iPointOfInterestId) {
-
-        // TODO
-        return null;
+        return m_aoLocations[iPointOfInterestId];
 	}
 
 	@Override
 	public Location getLocationOfBusDepot() {
-
-        // TODO
-        return null;
+        return m_oBusDepotLocation;
 	}
 
 	@Override

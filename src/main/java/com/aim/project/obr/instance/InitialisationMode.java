@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr.instance;
+package com.aim.project.obr.instance;
 
 /**
  * Represents the initialisation modes for generating solutions to the Open-top Bus Routing problem.

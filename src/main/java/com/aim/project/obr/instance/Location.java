@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr.instance;
+package com.aim.project.obr.instance;
 
 /**
  * @author Warren G Jackson

@@ -1,7 +1,7 @@
-package main.java.com.aim.project.obr.solution;
+package com.aim.project.obr.solution;
 
-import main.java.com.aim.project.obr.interfaces.OBRSolutionInterface;
-import main.java.com.aim.project.obr.interfaces.SolutionRepresentationInterface;
+import com.aim.project.obr.interfaces.OBRSolutionInterface;
+import com.aim.project.obr.interfaces.SolutionRepresentationInterface;
 
 /**
  * @author Warren G Jackson
@@ -38,6 +38,7 @@ public class OBRSolution implements OBRSolutionInterface {
 	public OBRSolutionInterface clone() {
 
         // TODO
+        return null;
 	}
 
 	@Override

@@ -1,10 +1,10 @@
-package main.java.com.aim.project.obr.heuristics;
+package com.aim.project.obr.heuristics;
 
 
 import java.util.Random;
 
-import main.java.com.aim.project.obr.interfaces.HeuristicInterface;
-import main.java.com.aim.project.obr.interfaces.OBRSolutionInterface;
+import com.aim.project.obr.interfaces.HeuristicInterface;
+import com.aim.project.obr.interfaces.OBRSolutionInterface;
 
 
 /**

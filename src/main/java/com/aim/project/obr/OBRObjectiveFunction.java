@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr;
+package com.aim.project.obr;
 
 import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 import com.aim.project.obr.interfaces.OBRInstanceInterface;

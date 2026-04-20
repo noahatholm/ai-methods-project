@@ -1,6 +1,6 @@
-package main.java.com.aim.project.obr.heuristics;
+package com.aim.project.obr.heuristics;
 
-import main.java.com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
+import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 
 import java.util.Random;
 

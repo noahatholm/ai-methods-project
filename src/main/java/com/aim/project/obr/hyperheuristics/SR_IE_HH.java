@@ -1,8 +1,8 @@
-package main.java.com.aim.project.obr.hyperheuristics;
+package com.aim.project.obr.hyperheuristics;
 
 
 import com.aim.project.obr.OBRDomain;
-import main.java.com.aim.project.obr.SolutionPrinter;
+import com.aim.project.obr.SolutionPrinter;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
 
 import AbstractClasses.HyperHeuristic;

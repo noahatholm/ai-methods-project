@@ -1,12 +1,12 @@
-package main.java.com.aim.project.obr.runners;
+package com.aim.project.obr.runners;
 
 
 import java.awt.Color;
 
-import main.java.com.aim.project.obr.OBRDomain;
-import main.java.com.aim.project.obr.instance.Location;
-import main.java.com.aim.project.obr.solution.OBRSolution;
-import main.java.com.aim.project.obr.visualiser.OpenTopBusRouteViewer;
+import com.aim.project.obr.OBRDomain;
+import com.aim.project.obr.instance.Location;
+import com.aim.project.obr.solution.OBRSolution;
+import com.aim.project.obr.visualiser.OpenTopBusRouteViewer;
 
 import AbstractClasses.HyperHeuristic;
 

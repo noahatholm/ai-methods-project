@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr;
+package com.aim.project.obr;
 
 import com.aim.project.obr.instance.Location;
 import com.aim.project.obr.interfaces.*;
@@ -95,7 +95,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         // TODO
         //  Note needs hard coding due to the design of HyFlex.
         //  The ProblemDomain class calls this method upon initialisation.
-		return -1;
+		return 0;
 	}
 
 	@Override
@@ -217,5 +217,30 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
     public void printInitialSolution() {
 
         // TODO
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println("--- Testing OBR Domain ---");
+
+        // 1. Create the domain
+        OBRDomain domain = new OBRDomain(12345L);
+
+        // 2. Set memory size (needs to be at least 1 to store a solution)
+        domain.setMemorySize(2);
+
+        // 3. Load the square.obr instance (Instance ID 0)
+        System.out.println("Loading instance 0...");
+        domain.loadInstance(0);
+
+        // 4. Initialise a solution at memory index 0
+        System.out.println("Initialising a random solution...");
+        domain.initialiseSolution(0);
+
+        // 5. Print it out to see if it worked!
+        System.out.println("Initial solution route:");
+        domain.printInitialSolution();
+
+        System.out.println("Objective Value (Total Distance): " + domain.getFunctionValue(0));
     }
 }

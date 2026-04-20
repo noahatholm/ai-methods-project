@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr.visualiser;
+package com.aim.project.obr.visualiser;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import main.java.com.aim.project.obr.OBRDomain;
+import com.aim.project.obr.OBRDomain;
 import com.aim.project.obr.instance.Location;
 import com.aim.project.obr.interfaces.OBRInstanceInterface;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
