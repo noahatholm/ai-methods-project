@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr.interfaces;
+package com.aim.project.obr.interfaces;
 
 import com.aim.project.obr.instance.Location;
 

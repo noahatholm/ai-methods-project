@@ -1,4 +1,4 @@
-package main.java.com.aim.project.obr.interfaces;
+package com.aim.project.obr.interfaces;
 
 import java.nio.file.Path;
 import java.util.Random;
