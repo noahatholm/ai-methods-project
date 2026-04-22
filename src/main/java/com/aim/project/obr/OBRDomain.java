@@ -1,12 +1,21 @@
 package com.aim.project.obr;
 
+import VRP.Solution;
 import com.aim.project.obr.heuristics.*;
+import com.aim.project.obr.instance.InitialisationMode;
 import com.aim.project.obr.instance.Location;
+import com.aim.project.obr.instance.reader.OBRInstanceReader;
 import com.aim.project.obr.interfaces.*;
 
 import AbstractClasses.ProblemDomain;
+import com.aim.project.obr.solution.OBRSolution;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.Random;
+
+
 
 /**
  * @author Warren G Jackson
@@ -15,6 +24,10 @@ import java.util.Random;
 public class OBRDomain extends ProblemDomain implements Visualisable, InLabPracticalExamInterface {
     private HeuristicOperators[] heuristics;
     private CrossoverHeuristicInterface[] crossoverHeuristics;
+    private OBRSolutionInterface best_solution;
+    private OBRSolutionInterface[] solution_memory;
+    private OBRInstanceInterface instance;
+    private OBRInstanceReaderInterface instance_reader;
 
     public OBRDomain(long lSeed) {
 
@@ -29,8 +42,8 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
         this.crossoverHeuristics = new CrossoverHeuristicInterface[1];
         crossoverHeuristics[0] = new PartiallyMappedCrossover(rng);
-        
 
+        this.instance_reader = new OBRInstanceReader();
 
 
 
@@ -73,16 +86,12 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public double getBestSolutionValue() {
-
-		// TODO
-        return -1.f;
+		return best_solution.getObjectiveFunctionValue();
 	}
 	
 	@Override
 	public double getFunctionValue(int iSolutionIndex) {
-
-        // TODO
-        return -1.f;
+        return solution_memory[iSolutionIndex].getObjectiveFunctionValue();
 	}
 
 	@Override
@@ -124,24 +133,59 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public void initialiseSolution(int iSolutionIndex) {
-		
-        // TODO
-        //  don't forget this might be the best solution found so far!
+		OBRSolutionInterface solution = instance.createSolution(InitialisationMode.RANDOM);
+        solution_memory[iSolutionIndex] = solution;
+        //Check if its the best we've seen
+        if (best_solution == null || solution.getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) best_solution = solution;
     }
 
 	@Override
 	public void loadInstance(int iInstanceId) {
+        String resourceName;
+        switch (iInstanceId) {
+            case 0:
+                resourceName = "instances/obr/carparks-40.obr";
+                break;
+            case 1:
+                resourceName = "instances/obr/chatgpt-instance-100-Pols.obr/";
+                break;
+            case 2:
+                resourceName = "instances/obr/clustered-pois.obr/";
+                break;
+            case 3:
+                resourceName = "instances.obr/grid.obr/";
+                break;
+            case 4:
+                resourceName = "instances.obr/libraries-15.obr/";
+                break;
+            case 5:
+                resourceName = "instances.obr/square.obr/";
+                break;
+            case 6:
+                resourceName = "instances.obr/tramstops-85.obr/";
+                break;
+            default:
+                throw new RuntimeException("Invalid Instance ID");
+        }
+        URL url = getClass().getClassLoader().getResource(resourceName);
 
-        // TODO
-        //  I recommend using <code>public URL getResource(String name)</code> and tag the folder with the
-        //  instance files as a resource to help with project portability.
+        if (url == null) {
+            throw new RuntimeException("Could not find resource: " + resourceName);
+        }
 
+        Path instancePath = null;
+
+        try {
+            instancePath = Path.of(url.toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        instance = instance_reader.readOBRInstanceFile(instancePath,rng);
 	}
 
 	@Override
 	public void setMemorySize(int iNewMemorySize) {
-
-        // TODO
+        solution_memory = new OBRSolution[iNewMemorySize];
 	}
 
 	@Override
@@ -188,9 +232,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	}
 
 	public OBRSolutionInterface getBestSolution() {
-
-        // TODO
-        return null;
+        return best_solution;
 	}
 
     /**

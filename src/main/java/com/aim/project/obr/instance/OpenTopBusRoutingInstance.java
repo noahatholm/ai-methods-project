@@ -1,14 +1,14 @@
 package com.aim.project.obr.instance;
 
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 import com.aim.project.obr.OBRObjectiveFunction;
 import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 import com.aim.project.obr.interfaces.OBRInstanceInterface;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
 import com.aim.project.obr.solution.OBRSolution;
+import com.aim.project.obr.solution.SolutionRepresentation;
 
 /**
  * @author Warren G Jackson
@@ -16,7 +16,7 @@ import com.aim.project.obr.solution.OBRSolution;
  */
 public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 
-    private final int m_iNumberOfLocations;
+    private final int m_iNumberOfLocations; //Including the depot
     private final Location[] m_aoLocations;
     private final Location m_oBusDepotLocation;
     private final Random m_oRandom;
@@ -33,16 +33,29 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 
 	@Override
 	public OBRSolution createSolution(InitialisationMode oMode) {
+        int[] locations_order = new int[m_iNumberOfLocations -1];
+        if (oMode == InitialisationMode.RANDOM) { //Random Mode
+            for (int i = 0; i < locations_order.length; i++) locations_order[i] = i;
 
-        // TODO
-        return null;
+            for (int i = 0; i < locations_order.length - 1; i++) {
+                int j = m_oRandom.nextInt(locations_order.length);
+                int temp = locations_order[i];
+                locations_order[i] = locations_order[j];
+                locations_order[j] = temp;
+            }
+
+        }
+        else if  (oMode == InitialisationMode.CONSTRUCTIVE) {//Constructive Mode
+
+
+        }
+        SolutionRepresentation representation = new SolutionRepresentation(locations_order);
+        return new OBRSolution(representation, m_oObjectiveFunction.getObjectiveFunctionValue(representation));
     }
 
     @Override
 	public ObjectiveFunctionInterface getOBRObjectiveFunction() {
-
-        // TODO
-		return null;
+        return m_oObjectiveFunction;
 	}
 
 	@Override
@@ -62,8 +75,10 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 
 	@Override
 	public ArrayList<Location> getSolutionAsListOfLocations(OBRSolutionInterface oSolution) {
-
-        // TODO
-        return null;
+        ArrayList<Location> locations_list = new ArrayList<Location>();
+        for (int location: oSolution.getSolutionRepresentation().getSolutionRepresentation()){
+            locations_list.add(m_aoLocations[location]);
+        }
+        return locations_list;
     }
 }
