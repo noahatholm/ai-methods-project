@@ -9,10 +9,12 @@ import com.aim.project.obr.interfaces.*;
 
 import AbstractClasses.ProblemDomain;
 import com.aim.project.obr.solution.OBRSolution;
+import com.aim.project.obr.solution.SolutionRepresentation;
 
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -24,6 +26,7 @@ import java.util.Random;
 public class OBRDomain extends ProblemDomain implements Visualisable, InLabPracticalExamInterface {
     private HeuristicOperators[] heuristics;
     private CrossoverHeuristicInterface[] crossoverHeuristics;
+    private OBRSolutionInterface initial_solution;
     private OBRSolutionInterface best_solution;
     private OBRSolutionInterface[] solution_memory;
     private OBRInstanceInterface instance;
@@ -40,8 +43,10 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         heuristics[2] = new NextDescent(rng);
         heuristics[3] = new DavissHillClimbing(rng);
 
-        this.crossoverHeuristics = new CrossoverHeuristicInterface[1];
-        crossoverHeuristics[0] = new PartiallyMappedCrossover(rng);
+        //Cross Over Heuristics
+        this.crossoverHeuristics = new CrossoverHeuristicInterface[2];
+        crossoverHeuristics[0] = new PartiallyMappedCrossover(rng); //Index heuristics.length
+        crossoverHeuristics[1] = new OrderCrossover(rng); //Index heuristics.length + 1
 
         this.instance_reader = new OBRInstanceReader();
 
@@ -79,9 +84,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public void copySolution(int iSolutionIndexFrom, int iSolutionIndexTo) {
-
-        // TODO
-        //  this should create a deep copy of the solution
+        solution_memory[iSolutionIndexTo] = solution_memory[iSolutionIndexFrom].clone();
 	}
 
 	@Override
@@ -96,39 +99,48 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public int[] getHeuristicsOfType(HeuristicType oHeuristicType) {
-
-        // TODO
-        return null;
+        if (oHeuristicType == HeuristicType.CROSSOVER){
+            int[] crossover = new int[crossoverHeuristics.length];
+            for (int i = 0; i < crossover.length; i++) {
+                crossover[i] = heuristics.length + i;
+            }
+            return crossover;
+        }
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < heuristics.length; i++) {
+            if (heuristics[i].getHeuristicType() ==  oHeuristicType) list.add(i);
+        }
+        int[] return_array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            return_array[i] = list.get(i);
+        }
+        return return_array;
 	}
 
 	@Override
 	public int[] getHeuristicsThatUseDepthOfSearch() {
-		
-		// TODO
-        return null;
+        int[] IOMHeuristics = new int[2];
+        IOMHeuristics[0] = 2;
+        IOMHeuristics[1] = 3;
+        return IOMHeuristics;
 	}
 
 	@Override
 	public int[] getHeuristicsThatUseIntensityOfMutation() {
-
-        // TODO
-        return null;
+        int[] IOMHeuristics = new int[2];
+        IOMHeuristics[0] = 0;
+        IOMHeuristics[1] = 1;
+        return IOMHeuristics;
 	}
 
 	@Override
 	public int getNumberOfHeuristics() {
-
-        // TODO
-        //  Note needs hard coding due to the design of HyFlex.
-        //  The ProblemDomain class calls this method upon initialisation.
-		return 0;
+        return 6;
 	}
 
 	@Override
 	public int getNumberOfInstances() {
-
-        // TODO
-		return -1;
+        return 7;
 	}
 
 	@Override
@@ -136,7 +148,8 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 		OBRSolutionInterface solution = instance.createSolution(InitialisationMode.RANDOM);
         solution_memory[iSolutionIndex] = solution;
         //Check if its the best we've seen
-        if (best_solution == null || solution.getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) best_solution = solution;
+        if (best_solution == null || solution.getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) updateBestSolution(iSolutionIndex);
+        if (initial_solution == null)  initial_solution = solution.clone();
     }
 
 	@Override
@@ -147,22 +160,22 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
                 resourceName = "instances/obr/carparks-40.obr";
                 break;
             case 1:
-                resourceName = "instances/obr/chatgpt-instance-100-Pols.obr/";
+                resourceName = "instances/obr/chatgpt-instance-100-Pols.obr";
                 break;
             case 2:
-                resourceName = "instances/obr/clustered-pois.obr/";
+                resourceName = "instances/obr/clustered-pois.obr";
                 break;
             case 3:
-                resourceName = "instances.obr/grid.obr/";
+                resourceName = "instances/obr/grid.obr";
                 break;
             case 4:
-                resourceName = "instances.obr/libraries-15.obr/";
+                resourceName = "instances/obr/libraries-15.obr";
                 break;
             case 5:
-                resourceName = "instances.obr/square.obr/";
+                resourceName = "instances/obr/square.obr";
                 break;
             case 6:
-                resourceName = "instances.obr/tramstops-85.obr/";
+                resourceName = "instances/obr/tramstops-85.obr";
                 break;
             default:
                 throw new RuntimeException("Invalid Instance ID");
@@ -202,10 +215,13 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	}
 	
 	private void updateBestSolution(int iSolutionIndex) {
-
-        // TODO
-        //  be careful that the reference is not saved otherwise we may modify it accidentally elsewhere in the code.
-	}
+        if (solution_memory[iSolutionIndex] == null) {
+            throw new RuntimeException("Tried to update Best Solution using Null Solution Index");
+        }
+        if (best_solution == null || solution_memory[iSolutionIndex].getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) {
+            best_solution = solution_memory[iSolutionIndex].clone();
+        }
+    }
 	
 	@Override
 	public OBRInstanceInterface getLoadedInstance() {
@@ -219,9 +235,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	 */
 	@Override
 	public int[] getBestSolutionRepresentation() {
-
-		// TODO
-		return null;
+		return best_solution.getSolutionRepresentation().getSolutionRepresentation();
 	}
 
 	@Override
@@ -234,6 +248,16 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	public OBRSolutionInterface getBestSolution() {
         return best_solution;
 	}
+
+    private void printSolution(OBRSolutionInterface solution) {
+        Location depot = instance.getLocationOfBusDepot();
+        int[] representation = solution.getSolutionRepresentation().getSolutionRepresentation();
+        System.out.print(depot.toString() + " - ");
+        for (int i : representation) {
+            System.out.print(instance.getLocationForPoI(i).toString() + " - ");
+        }
+        System.out.println(depot.toString());
+    }
 
     /**
      * Should print the best solution found in the form:
@@ -248,8 +272,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
      */
     @Override
     public void printBestSolutionFound() {
-
-        // TODO
+        printSolution(best_solution);
     }
 
     /**
@@ -257,8 +280,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
      */
     @Override
     public void printObjectiveValueOfTheBestSolutionFound() {
-
-        // TODO
+        System.out.println("Objective Value of Best Solution: " + best_solution.getObjectiveFunctionValue());
     }
 
     /**
@@ -274,8 +296,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
      */
     @Override
     public void printInitialSolution() {
-
-        // TODO
+        printSolution(initial_solution);
     }
 
 
@@ -290,7 +311,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
         // 3. Load the square.obr instance (Instance ID 0)
         System.out.println("Loading instance 0...");
-        domain.loadInstance(0);
+        domain.loadInstance(5);
 
         // 4. Initialise a solution at memory index 0
         System.out.println("Initialising a random solution...");

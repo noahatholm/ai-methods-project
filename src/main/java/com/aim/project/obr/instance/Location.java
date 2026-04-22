@@ -12,4 +12,9 @@ public record Location (int iLocationId, int x, int y) {
 
         this(id++, x, y);
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + "," + y + ")";
+    }
 }

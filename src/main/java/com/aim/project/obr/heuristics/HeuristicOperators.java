@@ -1,5 +1,6 @@
 package com.aim.project.obr.heuristics;
 
+import AbstractClasses.ProblemDomain;
 import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 
 import java.util.Random;
@@ -19,17 +20,21 @@ import java.util.Random;
 public class HeuristicOperators {
 
 	protected final Random m_oRandom;
-
+    protected final ProblemDomain.HeuristicType m_oHeuristicType;
     protected ObjectiveFunctionInterface m_oObjectiveFunction;
 
-	public HeuristicOperators(Random oRandom) {
-
+	public HeuristicOperators(Random oRandom, ProblemDomain.HeuristicType oHeuristicType) {
+        this.m_oHeuristicType = oHeuristicType;
 		this.m_oRandom = oRandom;
 	}
 
     public void setObjectiveFunction(ObjectiveFunctionInterface oObjectiveFunction) {
 
         this.m_oObjectiveFunction = oObjectiveFunction;
+    }
+
+    public ProblemDomain.HeuristicType getHeuristicType() {
+        return m_oHeuristicType;
     }
 
     // TODO include any common operations here, for example setObjectiveFunction(...) as implemented above.
