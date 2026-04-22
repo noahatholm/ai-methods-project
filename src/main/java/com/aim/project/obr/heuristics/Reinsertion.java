@@ -2,6 +2,7 @@ package com.aim.project.obr.heuristics;
 
 import java.util.Random;
 
+import AbstractClasses.ProblemDomain;
 import com.aim.project.obr.interfaces.HeuristicInterface;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
 
@@ -14,7 +15,7 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 
 	public Reinsertion(Random oRandom) {
 
-		super(oRandom);
+        super(oRandom, ProblemDomain.HeuristicType.MUTATION);
 	}
 
 	@Override

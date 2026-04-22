@@ -1,7 +1,9 @@
 package com.aim.project.obr.solution;
 
+import com.aim.project.obr.OBRObjectiveFunction;
 import com.aim.project.obr.instance.OpenTopBusRoutingInstance;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
+import com.aim.project.obr.interfaces.ObjectiveFunctionInterface;
 import com.aim.project.obr.interfaces.SolutionRepresentationInterface;
 
 /**

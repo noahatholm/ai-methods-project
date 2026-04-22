@@ -31,6 +31,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
     private OBRSolutionInterface[] solution_memory;
     private OBRInstanceInterface instance;
     private OBRInstanceReaderInterface instance_reader;
+    private ObjectiveFunctionInterface objective_function;
 
     public OBRDomain(long lSeed) {
 
@@ -48,6 +49,8 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         crossoverHeuristics[0] = new PartiallyMappedCrossover(rng); //Index heuristics.length
         crossoverHeuristics[1] = new OrderCrossover(rng); //Index heuristics.length + 1
 
+
+
         this.instance_reader = new OBRInstanceReader();
 
 
@@ -56,23 +59,40 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	
 	@Override
 	public double applyHeuristic(int iHeuristicIndex, int iCurrentSolutionIndex, int iCandidateSolutionIndex) {
+        HeuristicInterface heuristic = (HeuristicInterface) heuristics[iHeuristicIndex];
 
-        // TODO
-        return -1.f;
+        copySolution(iCurrentSolutionIndex, iCandidateSolutionIndex);
+        return heuristic.apply(solution_memory[iCandidateSolutionIndex],depthOfSearch,intensityOfMutation);
 	}
 
 	@Override
 	public double applyHeuristic(int iHeuristicIndex, int iParent1Index, int iParent2Index, int iCandidateIndex) {
+        CrossoverHeuristicInterface heuristic = crossoverHeuristics[iHeuristicIndex-heuristics.length];
 
-        // TODO
-        return -1.f;
+        OBRSolutionInterface p1 = solution_memory[iParent1Index];
+        OBRSolutionInterface p2 = solution_memory[iParent2Index];
+
+        OBRSolutionInterface child = p1.clone();
+        solution_memory[iCandidateIndex] = child;
+
+        return heuristic.apply(p1,p2,child,depthOfSearch,intensityOfMutation);
 	}
+
+    private String solutionToString(OBRSolutionInterface oSolution) {
+        StringBuilder str = new StringBuilder();
+        Location depot = instance.getLocationOfBusDepot();
+        int[] representation = oSolution.getSolutionRepresentation().getSolutionRepresentation();
+        str = new StringBuilder(depot.toString() + " - ");
+        for (int i : representation) {
+            str.append(instance.getLocationForPoI(i).toString()).append(" - ");
+        }
+        str = new StringBuilder(depot.toString());
+        return str.toString();
+    }
 
 	@Override
 	public String bestSolutionToString() {
-
-        // TODO
-        return null;
+        return solutionToString(best_solution);
 	}
 
 	@Override
@@ -119,18 +139,36 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public int[] getHeuristicsThatUseDepthOfSearch() {
-        int[] IOMHeuristics = new int[2];
-        IOMHeuristics[0] = 2;
-        IOMHeuristics[1] = 3;
-        return IOMHeuristics;
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < heuristics.length; i++) {
+            HeuristicInterface heuristic = (HeuristicInterface) heuristics[i];
+            if (heuristic.usesDepthOfSearch()) list.add(i);
+        }
+        for (int i = 0; i < crossoverHeuristics.length; i++) {
+            if (crossoverHeuristics[i].usesDepthOfSearch()) list.add(i+heuristics.length);
+        }
+        int[] return_array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            return_array[i] = list.get(i);
+        }
+        return return_array;
 	}
 
 	@Override
 	public int[] getHeuristicsThatUseIntensityOfMutation() {
-        int[] IOMHeuristics = new int[2];
-        IOMHeuristics[0] = 0;
-        IOMHeuristics[1] = 1;
-        return IOMHeuristics;
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < heuristics.length; i++) {
+            HeuristicInterface heuristic = (HeuristicInterface) heuristics[i];
+            if (heuristic.usesIntensityOfMutation()) list.add(i);
+        }
+        for (int i = 0; i < crossoverHeuristics.length; i++) {
+            if (crossoverHeuristics[i].usesIntensityOfMutation()) list.add(i+heuristics.length);
+        }
+        int[] return_array = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            return_array[i] = list.get(i);
+        }
+        return return_array;
 	}
 
 	@Override
@@ -194,6 +232,15 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
             throw new RuntimeException(e);
         }
         instance = instance_reader.readOBRInstanceFile(instancePath,rng);
+
+        //Set Objective Function
+        this.objective_function = new OBRObjectiveFunction(instance);
+        heuristics[0].setObjectiveFunction(objective_function);
+        heuristics[1].setObjectiveFunction(objective_function);
+        heuristics[2].setObjectiveFunction(objective_function);
+        heuristics[3].setObjectiveFunction(objective_function);
+        crossoverHeuristics[0].setObjectiveFunction(objective_function);
+        crossoverHeuristics[1].setObjectiveFunction(objective_function);
 	}
 
 	@Override
@@ -225,9 +272,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	
 	@Override
 	public OBRInstanceInterface getLoadedInstance() {
-
-		// TODO
-		return null;
+        return instance;
 	}
 
 	/**
@@ -240,9 +285,10 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public Location[] getRouteOrderedByPoIs() {
-
-		// TODO
-		return null;
+        ArrayList<Location> locationArrayList = instance.getSolutionAsListOfLocations(best_solution);
+        Location[] locations = new Location[locationArrayList.size()];
+        locations = locationArrayList.toArray(locations);
+        return locations;
 	}
 
 	public OBRSolutionInterface getBestSolution() {

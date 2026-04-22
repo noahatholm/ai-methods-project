@@ -3,6 +3,7 @@ package com.aim.project.obr.heuristics;
 
 import java.util.Random;
 
+import AbstractClasses.ProblemDomain;
 import com.aim.project.obr.interfaces.HeuristicInterface;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
 
@@ -14,8 +15,8 @@ import com.aim.project.obr.interfaces.OBRSolutionInterface;
 public class NextDescent extends HeuristicOperators implements HeuristicInterface {
 
 	public NextDescent(Random oRandom) {
-	
-		super(oRandom);
+
+        super(oRandom, ProblemDomain.HeuristicType.LOCAL_SEARCH);
 	}
 
 	@Override

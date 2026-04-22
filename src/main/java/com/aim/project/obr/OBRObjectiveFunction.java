@@ -47,6 +47,9 @@ public class OBRObjectiveFunction implements ObjectiveFunctionInterface {
 
 	@Override
 	public int getCost(int iLocationA, int iLocationB) {
+        if (iLocationA == -1 || iLocationA == m_oInstance.getNumberOfLocations() -1) return getDistanceBetweenBusDepotAndPoI(iLocationB);
+        if (iLocationB == -1 || iLocationB == m_oInstance.getNumberOfLocations() - 1) return getDistanceBetweenBusDepotAndPoI(iLocationA);
+
         if (cache[iLocationA][iLocationB] == -1) {
             Location locationA = m_oInstance.getLocationForPoI(iLocationA);
             Location locationB = m_oInstance.getLocationForPoI(iLocationB);
