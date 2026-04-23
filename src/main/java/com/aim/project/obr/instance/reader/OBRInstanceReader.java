@@ -48,7 +48,7 @@ public class OBRInstanceReader implements OBRInstanceReaderInterface {
                 line =  OBRReader.nextLine();
 
             }
-            System.out.println(OBRLocations);
+            System.out.println(OBRLocations.size());
             return new OpenTopBusRoutingInstance(OBRLocations.size() + 1, OBRLocations.toArray(Location[]::new),depotLocation,oRandom);
         }
         catch (java.io.IOException e){

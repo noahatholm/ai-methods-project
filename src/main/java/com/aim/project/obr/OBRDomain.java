@@ -198,7 +198,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
                 resourceName = "instances/obr/carparks-40.obr";
                 break;
             case 1:
-                resourceName = "instances/obr/chatgpt-instance-100-Pols.obr";
+                resourceName = "instances/obr/chatgpt-instance-100-Pois.obr";
                 break;
             case 2:
                 resourceName = "instances/obr/clustered-pois.obr";

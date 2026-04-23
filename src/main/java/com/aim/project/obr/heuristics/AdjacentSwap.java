@@ -25,49 +25,25 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
      * @param dIntensityOfMutation The parameter controlling the extent or intensity of changes introduced by the heuristic.
      * @return
      */
-    @Override
-    public int apply(OBRSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
-        int[] repr = oSolution.getSolutionRepresentation().getSolutionRepresentation();
-        int numPoIs = repr.length;
-        int objective_value = oSolution.getObjectiveFunctionValue();
+        @Override
+        public int apply(OBRSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
+            int numPoIs = oSolution.getNumberOfLocations() -1;
+            int objective_value = oSolution.getObjectiveFunctionValue();
 
 
-        for (int i = 0; i < numberOfSwaps(dIntensityOfMutation); i++) {
-            int l1 = m_oRandom.nextInt(numPoIs);
-            int l2 = (l1 + 1) % numPoIs;
+            for (int i = 0; i < numberOfSwaps(dIntensityOfMutation); i++) {
+                int l1 = m_oRandom.nextInt(numPoIs);
+                int l2 = (l1 + 1) % numPoIs;
 
-            int l1_id = repr[l1];
-            int l2_id = repr[l2];
+                adjacent_swap(l1,l2,oSolution);
 
-            //Perform Swap
-            repr[l1] = l2_id;
-            repr[l2] = l1_id;
-
-            if (l1 == numPoIs - 1) { //First and Last
-                int neighbour1 = repr[1];      // l2 + 1
-                int neighbour2 = repr[l1 - 1]; // l1 -1
-
-                objective_value -= m_oObjectiveFunction.getCost(l1_id, neighbour2);
-                objective_value -= m_oObjectiveFunction.getCost(l2_id, neighbour1);
-
-                objective_value += m_oObjectiveFunction.getCost(l1_id, neighbour1);
-                objective_value += m_oObjectiveFunction.getCost(l2_id, neighbour2);
-
-            } else { // Normal Adjacent Swap get cost handles depot cases
-                int n1_id = (l1 == 0) ? -1 : repr[l1 - 1];
-                int n2_id = (l2 == numPoIs - 1) ? oSolution.getNumberOfLocations() - 1 : repr[l2 + 1];
-
-                objective_value -= m_oObjectiveFunction.getCost(n1_id, l1_id);
-                objective_value -= m_oObjectiveFunction.getCost(l2_id, n2_id);
-
-                objective_value += m_oObjectiveFunction.getCost(n1_id, l2_id);
-                objective_value += m_oObjectiveFunction.getCost(l1_id, n2_id);
+                objective_value = delta_eval(oSolution,objective_value ,l2,l1);
             }
+
+            oSolution.setObjectiveFunctionValue(objective_value);
+            return objective_value;
         }
 
-        oSolution.setObjectiveFunctionValue(objective_value);
-        return objective_value;
-    }
 
 
     private int numberOfSwaps(double IOM){

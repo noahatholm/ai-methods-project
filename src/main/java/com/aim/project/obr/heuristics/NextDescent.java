@@ -21,29 +21,40 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public int apply(OBRSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
+        int best_eval = oSolution.getObjectiveFunctionValue();
+        int numPoIs = oSolution.getNumberOfLocations() -1;
 
-        // TODO
-        return Integer.MAX_VALUE;
+
+        for (int i = 0; i < numberOfIterations(dDepthOfSearch); i++) {
+            for (int l1 = 0; l1 <  numPoIs; l1++ ) {
+                int l2 = (l1 + 1) % numPoIs;
+
+                //Perform Swap
+                adjacent_swap(l1, l2, oSolution);
+                int temp_eval = delta_eval(oSolution, best_eval, l1, l2);
+                if (temp_eval < best_eval) {
+                    best_eval = temp_eval;
+                } else {
+                    adjacent_swap(l1, l2, oSolution); //Reject the change and swap it back
+                }
+            }
+        }
+        oSolution.setObjectiveFunctionValue(best_eval);
+        return best_eval;
 	}
 
 	@Override
 	public boolean isCrossover() {
-
-		// TODO
 		return false;
 	}
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
-		// TODO
 		return false;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
-		// TODO
-		return false;
+		return true;
 	}
 }
