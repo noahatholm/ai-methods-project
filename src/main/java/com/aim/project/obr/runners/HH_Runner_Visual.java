@@ -31,8 +31,8 @@ public abstract class HH_Runner_Visual {
 
         // set the runtime as 5 minutes
         // TODO this needs to be changed to reflect your machine's performance - see benchmarking in lab 8
-		long lTimeLimit = 5 * 60 * 1000;
-        //long lTimeLimit = 10;
+		//long lTimeLimit = 5 * 60 * 1000;
+        long lTimeLimit = 15;
 
 		OBRDomain oProblem = new OBRDomain(lSeed);
 		oProblem.loadInstance(INSTANCE_ID);

@@ -55,7 +55,7 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
         for (int i = 0; i < numberOfIterations(dDepthOfSearch); i++) {
             for (int l1 : order) {
-                int l2 = order[(l1 + 1) % numPoIs];
+                int l2 = (l1 + 1) % numPoIs;
 
                 //Perform Swap
                 adjacent_swap(l1, l2, oSolution);
