@@ -15,6 +15,7 @@ public class NHH extends HyperHeuristic {
     private int numberOfheuristics;
 
     private ChoiceFunction choiceFunction;
+    private SimulatedAnnealing simulatedAnnealing;
 
     public NHH(long lSeed) {
         super(lSeed);
@@ -47,6 +48,7 @@ public class NHH extends HyperHeuristic {
         int crossOverIndex = numberOfheuristics - oProblem.getHeuristicsOfType(ProblemDomain.HeuristicType.CROSSOVER).length;
 
         choiceFunction = new ChoiceFunction(numberOfheuristics,rng);
+        simulatedAnnealing = new SimulatedAnnealing(current_cost,getTimeLimit());
         int last_heuristic = 0;
 
         while(!hasTimeExpired()) {
@@ -56,7 +58,7 @@ public class NHH extends HyperHeuristic {
             long startTime = System.nanoTime();
             if (iHeuristicId >= crossOverIndex) { //Check if crossover heuristic
                 //For now will select best solution
-                int randomParentIndex = rng.nextInt(8) + 2;
+                int randomParentIndex = rng.nextInt(memorySize-2) + 2;
                 candidate_cost = oProblem.applyHeuristic(iHeuristicId,iCurrentSolution,randomParentIndex,iCandidateSolution);
             } else {
                 //System.out.println("Heuristic ID" + iHeuristicId + " current solution id " + iCurrentSolution + " candidate solution id " + iCandidateSolution);
@@ -76,14 +78,21 @@ public class NHH extends HyperHeuristic {
 
 
             //Move acceptance currently IE
-            //TODO simulated annealing
             if (candidate_cost <= current_cost) {
-                if (candidate_cost < current_cost) {
-                    System.out.println("Found better cost! " + candidate_cost);
-                }
+//                if (candidate_cost < current_cost) {
+//                    System.out.println("Found better cost! " + candidate_cost);
+//                    System.out.println(simulatedAnnealing.toString());
+//                }
                 current_cost = candidate_cost;
                 oProblem.copySolution(iCandidateSolution, iCurrentSolution);
+            } else{
+                double random_double = rng.nextDouble();
+                if (random_double < simulatedAnnealing.get_acceptance_probability(difference)) {
+                    current_cost = candidate_cost;
+                    oProblem.copySolution(iCandidateSolution, iCurrentSolution);
+                }
             }
+            simulatedAnnealing.advanceTemperature(getElapsedTime());
         }
 
         OBRSolutionInterface oSolution = ((OBRDomain) oProblem).getBestSolution();

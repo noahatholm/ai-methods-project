@@ -32,8 +32,8 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 
 
             for (int i = 0; i < numberOfSwaps(dIntensityOfMutation); i++) {
-                int l1 = m_oRandom.nextInt(numPoIs);
-                int l2 = (l1 + 1) % numPoIs;
+                int l1 = m_oRandom.nextInt(numPoIs-1);
+                int l2 = l1 + 1;
 
                 adjacent_swap(l1,l2,oSolution);
 

@@ -41,23 +41,14 @@ public class ChoiceFunction {
     }
 
     public void update_heuristic_performance(int heuristic, double difference, double cpu_time){
-        difference = difference * -1;
-        if (difference > 0) { //if it improved (Reward)
-            heuristic_performance[heuristic] = learning_rate * (difference/cpu_time) * heuristic_performance[heuristic];
-        }
-        else{ //If it didn't improve (Punish)
-            heuristic_performance[heuristic] = (1-learning_rate) * heuristic_performance[heuristic];
-        }
+        double reward = (-difference / cpu_time);
+
+        heuristic_performance[heuristic] = (1 - learning_rate) * heuristic_performance[heuristic] + (learning_rate * reward);
     }
 
     public void update_order_performance(int heuristic, int prev_heuristic, double difference, double cpu_time){
-        difference = difference * -1;
-        if (difference > 0){ //if it improved (Reward)
-            order_performance[prev_heuristic][heuristic] = learning_rate * (difference/cpu_time) * order_performance[prev_heuristic][heuristic];
-        }
-        else{ //If it didn't improve (Punish)
-            order_performance[prev_heuristic][heuristic] = (1-learning_rate) * order_performance[prev_heuristic][heuristic];
-        }
+        double reward = (-difference / cpu_time);
+        order_performance[prev_heuristic][heuristic] = (1 - learning_rate) * order_performance[prev_heuristic][heuristic] + (learning_rate * reward);
     }
 
     public void update_starvation_counter(int heuristic){ //sets heuristic last used to 0 and increments everyone else
@@ -76,8 +67,6 @@ public class ChoiceFunction {
     }
 
     public int heuristicChoiceFunction(int prev_heuristic){
-        int best_choice = -1;
-        double best_choice_value = Double.MIN_VALUE;
         int starvation_max = max(starvation_counter);
         double order_max = max(order_performance[prev_heuristic]);
         double order_min = min(order_performance[prev_heuristic]);
@@ -92,7 +81,8 @@ public class ChoiceFunction {
             double performance_normal = normalise(heuristic_performance[i], performance_min, performance_max);
 
             double selection_score = performance_weight * performance_normal + order_weight * order_normal + starvation_weight * starvation_normal;
-            selection_scores[i] = selection_score;
+            selection_scores[i] =  Math.max(selection_score, 0.01); //give it a chance
+            //System.out.println(selection_scores[i]);
             sum+=selection_score;
         }
         return rouletteWheelSelection(selection_scores,sum);
@@ -106,7 +96,7 @@ public class ChoiceFunction {
             new_sum+= selection_scores[i];
             if (target <= new_sum) return i;
         }
-        return -1; //should never happen
+        return 0; //should never happen
     }
 
     private int max(int[] array){
