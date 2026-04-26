@@ -62,7 +62,11 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         HeuristicInterface heuristic = (HeuristicInterface) heuristics[iHeuristicIndex];
 
         copySolution(iCurrentSolutionIndex, iCandidateSolutionIndex);
-        return heuristic.apply(solution_memory[iCandidateSolutionIndex],depthOfSearch,intensityOfMutation);
+
+        updateBestSolution(iCandidateSolutionIndex);
+        double new_value = heuristic.apply(solution_memory[iCandidateSolutionIndex],depthOfSearch,intensityOfMutation);
+        if (new_value < 0) throw new RuntimeException("Impossible Heuristic Objective Value from Heuristic ID" + iHeuristicIndex);
+        return new_value;
 	}
 
 	@Override
@@ -74,8 +78,10 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
         OBRSolutionInterface child = p1.clone();
         solution_memory[iCandidateIndex] = child;
-
-        return heuristic.apply(p1,p2,child,depthOfSearch,intensityOfMutation);
+        updateBestSolution(iCandidateIndex);
+        double new_value = heuristic.apply(p1,p2,child,depthOfSearch,intensityOfMutation);
+        if (new_value < 0) throw new RuntimeException("Impossible Heuristic Objective Value from Heuristic ID" + iHeuristicIndex);
+        return new_value;
 	}
 
     private String solutionToString(OBRSolutionInterface oSolution) {
@@ -180,6 +186,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	public int getNumberOfInstances() {
         return 7;
 	}
+
 
 	@Override
 	public void initialiseSolution(int iSolutionIndex) {
@@ -343,30 +350,5 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
     @Override
     public void printInitialSolution() {
         printSolution(initial_solution);
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println("--- Testing OBR Domain ---");
-
-        // 1. Create the domain
-        OBRDomain domain = new OBRDomain(12345L);
-
-        // 2. Set memory size (needs to be at least 1 to store a solution)
-        domain.setMemorySize(2);
-
-        // 3. Load the square.obr instance (Instance ID 0)
-        System.out.println("Loading instance 0...");
-        domain.loadInstance(5);
-
-        // 4. Initialise a solution at memory index 0
-        System.out.println("Initialising a random solution...");
-        domain.initialiseSolution(0);
-
-        // 5. Print it out to see if it worked!
-        System.out.println("Initial solution route:");
-        domain.printInitialSolution();
-
-        System.out.println("Objective Value (Total Distance): " + domain.getFunctionValue(0));
     }
 }

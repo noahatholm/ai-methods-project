@@ -62,16 +62,16 @@ public class HeuristicOperators {
             current_obj += m_oObjectiveFunction.getCost(l2_id, neighbour2);
 
         } else { // Normal Adjacent swap
-            int n1_id = (l1 == 0) ? -1 : repr[l1 - 1];
+            int n1_id = (l1 == 0) ? -1 : repr[l1 - 1]; // -1 likely represents Depot start
             int n2_id = (l2 == numPoIs - 1) ? oSolution.getNumberOfLocations() - 1 : repr[l2 + 1];
 
-            //Remove old edges
-            current_obj -= m_oObjectiveFunction.getCost(n1_id, l1_id);
-            current_obj -= m_oObjectiveFunction.getCost(l2_id, n2_id);
+            // REMOVE OLD EDGES
+            current_obj -= m_oObjectiveFunction.getCost(n1_id, l2_id);
+            current_obj -= m_oObjectiveFunction.getCost(l1_id, n2_id);
 
-            // Add new edges
-            current_obj += m_oObjectiveFunction.getCost(n1_id, l2_id);
-            current_obj += m_oObjectiveFunction.getCost(l1_id, n2_id);
+            // ADD NEW EDGES
+            current_obj += m_oObjectiveFunction.getCost(n1_id, l1_id);
+            current_obj += m_oObjectiveFunction.getCost(l2_id, n2_id);
         }
 
         return current_obj;

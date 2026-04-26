@@ -41,12 +41,13 @@ public class OrderCrossover implements CrossoverHeuristicInterface {
 	public int apply(OBRSolutionInterface oParent1, OBRSolutionInterface oParent2,
                         OBRSolutionInterface oChild, double dDepthOfSearch, double dIntensityOfMutation) {
 
-        int numPoIs = oParent1.getNumberOfLocations() -1;
+
 
         //Copy Parent2's DNA to child
         int[] child_dna= oParent2.getSolutionRepresentation().getSolutionRepresentation().clone();
         int[] parent1_dna = oParent1.getSolutionRepresentation().getSolutionRepresentation();
         int[] parent2_dna = oParent2.getSolutionRepresentation().getSolutionRepresentation();
+        int numPoIs = parent2_dna.length;
 
 
         int cut1 = m_oRandom.nextInt(numPoIs);

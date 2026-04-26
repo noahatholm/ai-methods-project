@@ -30,11 +30,11 @@ public class PartiallyMappedCrossover implements CrossoverHeuristicInterface {
 
 	@Override
 	public int apply(OBRSolutionInterface oParent1, OBRSolutionInterface oParent2, OBRSolutionInterface oChild, double dDepthOfSearch, double dIntensityOfMutation) {
-        int numPoIs = oParent1.getNumberOfLocations() -1;
 
         //Copy Parent2's DNA to child
         int[] child_dna= oParent2.getSolutionRepresentation().getSolutionRepresentation().clone();
         int[] parent1_dna = oParent1.getSolutionRepresentation().getSolutionRepresentation();
+        int numPoIs = parent1_dna.length;
 
         int cut1 = m_oRandom.nextInt(numPoIs);
         int cut2 = m_oRandom.nextInt(numPoIs);

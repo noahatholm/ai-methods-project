@@ -46,16 +46,18 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
         int best_eval = oSolution.getObjectiveFunctionValue();
         int numPoIs = oSolution.getNumberOfLocations() -1;
         //If order array not initialised yet initialise
-        if (order == null) {
-            order = new int[numPoIs];
-            for (int i = 0; i < numPoIs; i++) order[i] = i;
+        if (order == null || order.length != numPoIs - 1) {
+            order = new int[numPoIs - 1];
+            for (int i = 0; i < numPoIs - 1; i++) {
+                order[i] = i;
+            }
         }
 
         shuffleArray(order);
 
         for (int i = 0; i < numberOfIterations(dDepthOfSearch); i++) {
             for (int l1 : order) {
-                int l2 = (l1 + 1) % numPoIs;
+                int l2 = l1 + 1;
 
                 //Perform Swap
                 adjacent_swap(l1, l2, oSolution);
