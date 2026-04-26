@@ -50,48 +50,57 @@ public class NHH extends HyperHeuristic {
         choiceFunction = new ChoiceFunction(numberOfheuristics,rng);
         simulatedAnnealing = new SimulatedAnnealing(current_cost,getTimeLimit());
         int last_heuristic = 0;
+        double best_cost = current_cost; // Track the all time best
 
         while(!hasTimeExpired()) {
-            int iHeuristicId = choiceFunction.heuristicChoiceFunction(last_heuristic); //use choice function to get next heuristic
-            //System.out.println("Heuristic ID:" + iHeuristicId);
-            double cpuTime;
+            int iHeuristicId = choiceFunction.heuristicChoiceFunction(last_heuristic);
+
             long startTime = System.nanoTime();
-            if (iHeuristicId >= crossOverIndex) { //Check if crossover heuristic
-                //For now will select best solution
+
+            if (iHeuristicId >= crossOverIndex) {
                 int randomParentIndex = rng.nextInt(memorySize-2) + 2;
-                candidate_cost = oProblem.applyHeuristic(iHeuristicId,iCurrentSolution,randomParentIndex,iCandidateSolution);
+                candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, randomParentIndex, iCandidateSolution);
             } else {
-                //System.out.println("Heuristic ID" + iHeuristicId + " current solution id " + iCurrentSolution + " candidate solution id " + iCandidateSolution);
                 candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, iCandidateSolution);
             }
+
             long endTime = System.nanoTime();
-            cpuTime = (endTime - startTime);
 
+            // have to calc my own ms time cuz the milliseconds is buggy on my laptop
+            double cpuTimeMs = Math.max(0.001, (endTime - startTime) / 1_000_000.0);
 
-            //Update choice function
-            //System.out.println(cpuTime);
             double difference = candidate_cost - current_cost;
-            choiceFunction.update_heuristic_performance(iHeuristicId, difference, cpuTime);
-            choiceFunction.update_order_performance(iHeuristicId,last_heuristic,difference,cpuTime);
+            choiceFunction.update_heuristic_performance(iHeuristicId, difference, cpuTimeMs);
+            choiceFunction.update_order_performance(iHeuristicId, last_heuristic, difference, cpuTimeMs);
             choiceFunction.update_starvation_counter(iHeuristicId);
+
             last_heuristic = iHeuristicId;
 
+            // SA acceptance logic
+            boolean accepted = false;
 
-            //Move acceptance currently IE
             if (candidate_cost <= current_cost) {
-//                if (candidate_cost < current_cost) {
-//                    System.out.println("Found better cost! " + candidate_cost);
-//                    System.out.println(simulatedAnnealing.toString());
-//                }
-                current_cost = candidate_cost;
-                oProblem.copySolution(iCandidateSolution, iCurrentSolution);
-            } else{
-                double random_double = rng.nextDouble();
-                if (random_double < simulatedAnnealing.get_acceptance_probability(difference)) {
-                    current_cost = candidate_cost;
-                    oProblem.copySolution(iCandidateSolution, iCurrentSolution);
+                accepted = true;
+            } else {
+                if (rng.nextDouble() < simulatedAnnealing.get_acceptance_probability(difference)) {
+                    accepted = true;
                 }
             }
+
+            if (accepted) {
+                current_cost = candidate_cost;
+                oProblem.copySolution(iCandidateSolution, iCurrentSolution);
+
+                // Keep population healthy
+                if (candidate_cost < best_cost) {
+                    best_cost = candidate_cost;
+                    System.out.println("Found better cost! " + best_cost);
+
+                    int randomSlot = rng.nextInt(memorySize - 2) + 2;
+                    oProblem.copySolution(iCurrentSolution, randomSlot);
+                }
+            }
+
             simulatedAnnealing.advanceTemperature(getElapsedTime());
         }
 

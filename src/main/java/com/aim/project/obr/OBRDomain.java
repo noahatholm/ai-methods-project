@@ -37,12 +37,13 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 		super(lSeed);
         //Create heuristics
-        this.heuristics = new HeuristicOperators[4];
+        this.heuristics = new HeuristicOperators[5];
 
         heuristics[0] = new AdjacentSwap(rng);
         heuristics[1] = new Reinsertion(rng);
-        heuristics[2] = new NextDescent(rng);
-        heuristics[3] = new DavissHillClimbing(rng);
+        heuristics[2] = new Inversion(rng);
+        heuristics[3] = new NextDescent(rng);
+        heuristics[4] = new DavissHillClimbing(rng);
 
         //Cross Over Heuristics
         this.crossoverHeuristics = new CrossoverHeuristicInterface[2];
@@ -179,7 +180,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public int getNumberOfHeuristics() {
-        return 6;
+        return 7;
 	}
 
 	@Override
@@ -246,6 +247,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         heuristics[1].setObjectiveFunction(objective_function);
         heuristics[2].setObjectiveFunction(objective_function);
         heuristics[3].setObjectiveFunction(objective_function);
+        heuristics[4].setObjectiveFunction(objective_function);
         crossoverHeuristics[0].setObjectiveFunction(objective_function);
         crossoverHeuristics[1].setObjectiveFunction(objective_function);
 	}

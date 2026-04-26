@@ -9,7 +9,7 @@ public class SimulatedAnnealing {
     public SimulatedAnnealing(double initial_solution_fitness,long runTime) {
         this.initial_factor = initial_solution_fitness * 0.1;
         this.current_temperature = initial_factor;
-        this.end_time = runTime * 0.9; //Finish a bit before actual time ends
+        this.end_time = runTime * 0.8; //Finish a bit before actual time ends
         this.final_temp = 1.0;
 
     }
@@ -24,8 +24,7 @@ public class SimulatedAnnealing {
     }
 
     public double get_acceptance_probability(double delta) {
-        double temp = Math.max(current_temperature, 0.00001);
-        return Math.exp(-delta / temp);
+        return Math.exp(-(delta/getCurrent_temperature()));
     }
 
     public String toString(){

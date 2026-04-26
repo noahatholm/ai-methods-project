@@ -46,7 +46,25 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 
         }
         else if  (oMode == InitialisationMode.CONSTRUCTIVE) {//Constructive Mode
-
+            int[] visited_nodes = new int[m_iNumberOfLocations];
+            int visited_count = 0;
+            int current_node = -1; //-1 is depot in cost function
+            while (visited_count != m_iNumberOfLocations -1){
+                int closest_node = -1;
+                double shortest_distance = Double.MAX_VALUE;
+                for (int i = 0; i < m_iNumberOfLocations -1; i++) {
+                    if (visited_nodes[i] == 0){
+                        double distance = m_oObjectiveFunction.getCost(current_node,i);
+                        if (distance <  shortest_distance){
+                            closest_node = i;
+                            shortest_distance = distance;
+                        }
+                    }
+                }
+                locations_order[visited_count] = closest_node;
+                visited_nodes[closest_node] = 1;
+                visited_count++;
+            }
 
         }
         SolutionRepresentation representation = new SolutionRepresentation(locations_order);
