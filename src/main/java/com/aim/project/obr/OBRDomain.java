@@ -1,5 +1,6 @@
 package com.aim.project.obr;
 
+import ASAP.NRP.Solvers.Crossover.Crossover;
 import VRP.Solution;
 import com.aim.project.obr.heuristics.*;
 import com.aim.project.obr.instance.InitialisationMode;
@@ -37,13 +38,14 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 		super(lSeed);
         //Create heuristics
-        this.heuristics = new HeuristicOperators[5];
+        this.heuristics = new HeuristicOperators[6];
 
         heuristics[0] = new AdjacentSwap(rng);
         heuristics[1] = new Reinsertion(rng);
         heuristics[2] = new Inversion(rng);
-        heuristics[3] = new NextDescent(rng);
-        heuristics[4] = new DavissHillClimbing(rng);
+        heuristics[3] = new NormalSwap(rng);
+        heuristics[4] = new NextDescent(rng);
+        heuristics[5] = new DavissHillClimbing(rng);
 
         //Cross Over Heuristics
         this.crossoverHeuristics = new CrossoverHeuristicInterface[2];
@@ -180,7 +182,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 
 	@Override
 	public int getNumberOfHeuristics() {
-        return 7;
+        return 8;
 	}
 
 	@Override
@@ -192,6 +194,14 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
 	@Override
 	public void initialiseSolution(int iSolutionIndex) {
 		OBRSolutionInterface solution = instance.createSolution(InitialisationMode.RANDOM);
+        solution_memory[iSolutionIndex] = solution;
+        //Check if its the best we've seen
+        if (best_solution == null || solution.getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) updateBestSolution(iSolutionIndex);
+        if (initial_solution == null)  initial_solution = solution.clone();
+    }
+
+    public void initaliseConstructiveSolution(int iSolutionIndex) {
+        OBRSolutionInterface solution = instance.createSolution(InitialisationMode.CONSTRUCTIVE);
         solution_memory[iSolutionIndex] = solution;
         //Check if its the best we've seen
         if (best_solution == null || solution.getObjectiveFunctionValue() < best_solution.getObjectiveFunctionValue()) updateBestSolution(iSolutionIndex);
@@ -248,6 +258,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         heuristics[2].setObjectiveFunction(objective_function);
         heuristics[3].setObjectiveFunction(objective_function);
         heuristics[4].setObjectiveFunction(objective_function);
+        heuristics[5].setObjectiveFunction(objective_function);
         crossoverHeuristics[0].setObjectiveFunction(objective_function);
         crossoverHeuristics[1].setObjectiveFunction(objective_function);
 	}

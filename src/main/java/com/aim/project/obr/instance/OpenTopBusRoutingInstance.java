@@ -34,41 +34,69 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
 	@Override
 	public OBRSolution createSolution(InitialisationMode oMode) {
         int[] locations_order = new int[m_iNumberOfLocations -1];
-        if (oMode == InitialisationMode.RANDOM) { //Random Mode
-            for (int i = 0; i < locations_order.length; i++) locations_order[i] = i;
-
-            for (int i = 0; i < locations_order.length - 1; i++) {
-                int j = m_oRandom.nextInt(locations_order.length);
-                int temp = locations_order[i];
-                locations_order[i] = locations_order[j];
-                locations_order[j] = temp;
-            }
-
-        }
-        else if  (oMode == InitialisationMode.CONSTRUCTIVE) {//Constructive Mode
-            int[] visited_nodes = new int[m_iNumberOfLocations];
-            int visited_count = 0;
-            int current_node = -1; //-1 is depot in cost function
-            while (visited_count != m_iNumberOfLocations -1){
-                int closest_node = -1;
-                double shortest_distance = Double.MAX_VALUE;
-                for (int i = 0; i < m_iNumberOfLocations -1; i++) {
-                    if (visited_nodes[i] == 0){
-                        double distance = m_oObjectiveFunction.getCost(current_node,i);
-                        if (distance <  shortest_distance){
-                            closest_node = i;
-                            shortest_distance = distance;
-                        }
-                    }
-                }
-                locations_order[visited_count] = closest_node;
-                visited_nodes[closest_node] = 1;
-                visited_count++;
-            }
-
-        }
         SolutionRepresentation representation = new SolutionRepresentation(locations_order);
+        representation.setSolutionRepresentation(locations_order);
+        if (oMode == InitialisationMode.RANDOM) { //Random Mode
+            random_initialisation(locations_order);
+        }
+        else if (oMode == InitialisationMode.CONSTRUCTIVE) { //Constructive mode (OP)
+            constructive_initialisation(locations_order);
+        }
         return new OBRSolution(representation, m_oObjectiveFunction.getObjectiveFunctionValue(representation));
+    }
+
+    private void random_initialisation(int[] locations_order){
+        for (int i = 0; i < locations_order.length; i++) locations_order[i] = i;
+
+        for (int i = 0; i < locations_order.length - 1; i++) {
+            int j = m_oRandom.nextInt(locations_order.length);
+            int temp = locations_order[i];
+            locations_order[i] = locations_order[j];
+            locations_order[j] = temp;
+        }
+    }
+
+    private void constructive_initialisation(int[] locations_order) {
+        List<Integer> remaining = new ArrayList<>();
+        for (int i = 0; i < m_iNumberOfLocations - 1; i++) remaining.add(i);
+
+        //Start with closest node to depot
+        int bestPoI = -1;
+        int minDist = Integer.MAX_VALUE;
+        for (int p : remaining) {
+            int d = m_oObjectiveFunction.getDistanceBetweenBusDepotAndPoI(p);
+            if (d < minDist) {
+                minDist = d;
+                bestPoI = p;
+            }
+        }
+
+        List<Integer> tour = new ArrayList<>();
+        tour.add(bestPoI);
+        remaining.remove(Integer.valueOf(bestPoI));
+
+        //Insert each remaining location into position where adds least cost
+        while (!remaining.isEmpty()) {
+            int bestToInsert = -1, bestIdx = -1;
+            long bestDelta = Long.MAX_VALUE;
+
+            for (int p : remaining) {
+                for (int i = 0; i <= tour.size(); i++) {
+                    int prev = (i == 0) ? -1 : tour.get(i - 1);
+                    int next = (i == tour.size()) ? -1 : tour.get(i);
+
+                    long added = (prev == -1) ? m_oObjectiveFunction.getDistanceBetweenBusDepotAndPoI(p) : m_oObjectiveFunction.getCost(prev, p);
+                    added += (next == -1) ? m_oObjectiveFunction.getDistanceBetweenBusDepotAndPoI(p) : m_oObjectiveFunction.getCost(p, next);
+                    long removed = (prev == -1 || next == -1) ? 0 : m_oObjectiveFunction.getCost(prev, next);
+
+                    long delta = added - removed;
+                    if (delta < bestDelta) { bestDelta = delta; bestToInsert = p; bestIdx = i; }
+                }
+            }
+            tour.add(bestIdx, bestToInsert);
+            remaining.remove(Integer.valueOf(bestToInsert));
+        }
+        for (int i = 0; i < locations_order.length; i++) locations_order[i] = tour.get(i);
     }
 
     @Override

@@ -27,6 +27,10 @@ public class SimulatedAnnealing {
         return Math.exp(-(delta/getCurrent_temperature()));
     }
 
+    public void reheat() {
+        this.current_temperature = this.initial_factor * 0.25;
+    }
+
     public String toString(){
         return "Geometric Cooling T_0: " + this.initial_factor + "Current Temperature:" + this.current_temperature;
     }

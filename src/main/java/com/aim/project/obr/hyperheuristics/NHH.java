@@ -49,19 +49,22 @@ public class NHH extends HyperHeuristic {
 
         choiceFunction = new ChoiceFunction(numberOfheuristics,rng);
         simulatedAnnealing = new SimulatedAnnealing(current_cost,getTimeLimit());
+
+        long last_improvement_time = 0;
         int last_heuristic = 0;
         double best_cost = current_cost; // Track the all time best
 
         while(!hasTimeExpired()) {
+            //Use choice function to pick next heuristic
             int iHeuristicId = choiceFunction.heuristicChoiceFunction(last_heuristic);
 
-            long startTime = System.nanoTime();
+            long startTime = System.nanoTime(); //track how long it takes to tax using lots of compute
 
             if (iHeuristicId >= crossOverIndex) {
                 int randomParentIndex = rng.nextInt(memorySize-2) + 2;
-                candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, randomParentIndex, iCandidateSolution);
+                candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, randomParentIndex, iCandidateSolution); //apply crossover
             } else {
-                candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, iCandidateSolution);
+                candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, iCandidateSolution); //apply mutation or hill climb
             }
 
             long endTime = System.nanoTime();
@@ -69,7 +72,8 @@ public class NHH extends HyperHeuristic {
             // have to calc my own ms time cuz the milliseconds is buggy on my laptop
             double cpuTimeMs = Math.max(0.001, (endTime - startTime) / 1_000_000.0);
 
-            double difference = candidate_cost - current_cost;
+            double difference = candidate_cost - current_cost; //calculate delta
+            //Update the choice function so it "learns"
             choiceFunction.update_heuristic_performance(iHeuristicId, difference, cpuTimeMs);
             choiceFunction.update_order_performance(iHeuristicId, last_heuristic, difference, cpuTimeMs);
             choiceFunction.update_starvation_counter(iHeuristicId);
@@ -94,20 +98,37 @@ public class NHH extends HyperHeuristic {
                 // Keep population healthy
                 if (candidate_cost < best_cost) {
                     best_cost = candidate_cost;
+                    last_improvement_time = getElapsedTime();
                     System.out.println("Found better cost! " + best_cost);
 
+                    //Add this solution to  a random parent slot
                     int randomSlot = rng.nextInt(memorySize - 2) + 2;
                     oProblem.copySolution(iCurrentSolution, randomSlot);
                 }
             }
 
             simulatedAnnealing.advanceTemperature(getElapsedTime());
+            choiceFunction.updateWeights(getElapsedTime(), getTimeLimit());
+
+            //If no improvement has been made in a while likely stuck in local min
+            if (getElapsedTime() - last_improvement_time > 15) {
+                simulatedAnnealing.reheat(); //Reset the SA rate
+                //Generate a very good solution for current to help add so good genetics
+                ((OBRDomain) oProblem).initaliseConstructiveSolution(iCurrentSolution);
+
+                //Add some diversity to population
+                for (int i = 2; i < (memorySize / 2 + 1); i++) oProblem.initialiseSolution(i);
+                last_improvement_time = getElapsedTime();
+                System.out.println("No improvedment for 15 seconds reheating a bit");
+                System.out.println(simulatedAnnealing.toString());
+            }
         }
+
+
 
         OBRSolutionInterface oSolution = ((OBRDomain) oProblem).getBestSolution();
         SolutionPrinter oSolutionPrinter = new SolutionPrinter("NHH-out.csv");
         oSolutionPrinter.printSolution( ((OBRDomain) oProblem).getLoadedInstance().getSolutionAsListOfLocations(oSolution));
-
     }
 
     @Override

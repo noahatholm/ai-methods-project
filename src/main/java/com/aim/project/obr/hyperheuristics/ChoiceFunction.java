@@ -40,6 +40,13 @@ public class ChoiceFunction {
         Arrays.fill(heuristic_performance, 0.1);
     }
 
+    public void updateWeights(long elapsed, long total) {
+        double timeRatio = (double) elapsed / total;
+
+        this.starvation_weight = 0.5 * (1.0 - timeRatio);
+        this.learning_rate = 0.2 * (1.0 - timeRatio * 0.5);
+    }
+
     public void update_heuristic_performance(int heuristic, double difference, double cpu_time){
         double reward = (-difference / cpu_time);
 
