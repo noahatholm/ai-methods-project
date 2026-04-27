@@ -40,7 +40,7 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
             random_initialisation(locations_order);
         }
         else if (oMode == InitialisationMode.CONSTRUCTIVE) { //Constructive mode (OP)
-            constructive_initialisation(locations_order);
+            constructive_random_initialisation(locations_order);
         }
         return new OBRSolution(representation, m_oObjectiveFunction.getObjectiveFunctionValue(representation));
     }
@@ -56,9 +56,11 @@ public class OpenTopBusRoutingInstance implements OBRInstanceInterface {
         }
     }
 
-    private void constructive_initialisation(int[] locations_order) {
+    private void constructive_random_initialisation(int[] locations_order) {
         List<Integer> remaining = new ArrayList<>();
         for (int i = 0; i < m_iNumberOfLocations - 1; i++) remaining.add(i);
+        Collections.shuffle(remaining); //Add them in a random order;
+
 
         //Start with closest node to depot
         int bestPoI = -1;

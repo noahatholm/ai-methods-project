@@ -1,7 +1,5 @@
 package com.aim.project.obr;
 
-import ASAP.NRP.Solvers.Crossover.Crossover;
-import VRP.Solution;
 import com.aim.project.obr.heuristics.*;
 import com.aim.project.obr.instance.InitialisationMode;
 import com.aim.project.obr.instance.Location;
@@ -10,14 +8,11 @@ import com.aim.project.obr.interfaces.*;
 
 import AbstractClasses.ProblemDomain;
 import com.aim.project.obr.solution.OBRSolution;
-import com.aim.project.obr.solution.SolutionRepresentation;
 
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Random;
-
 
 
 /**
@@ -200,7 +195,7 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         if (initial_solution == null)  initial_solution = solution.clone();
     }
 
-    public void initaliseConstructiveSolution(int iSolutionIndex) {
+    public void initaliseConstructiveRandomSolution(int iSolutionIndex) {
         OBRSolutionInterface solution = instance.createSolution(InitialisationMode.CONSTRUCTIVE);
         solution_memory[iSolutionIndex] = solution;
         //Check if its the best we've seen

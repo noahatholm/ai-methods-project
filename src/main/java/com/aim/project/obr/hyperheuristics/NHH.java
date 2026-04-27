@@ -6,8 +6,6 @@ import com.aim.project.obr.OBRDomain;
 import com.aim.project.obr.SolutionPrinter;
 import com.aim.project.obr.interfaces.OBRSolutionInterface;
 
-import java.util.Arrays;
-
 public class NHH extends HyperHeuristic {
 
     private double current_cost;
@@ -113,15 +111,15 @@ public class NHH extends HyperHeuristic {
             updateDOSAndIOM(oProblem);
 
             //If no improvement has been made in a while likely stuck in local min
-            if (getElapsedTime() - last_improvement_time > 15) {
+            if (getElapsedTime() - last_improvement_time > 10) {
                 simulatedAnnealing.reheat(); //Reset the SA rate
                 //Generate a very good solution for current to help add so good genetics
-                ((OBRDomain) oProblem).initaliseConstructiveSolution(iCurrentSolution);
+                ((OBRDomain) oProblem).initaliseConstructiveRandomSolution(iCurrentSolution);
 
                 //Add some diversity to population
                 for (int i = 2; i < (memorySize / 2 + 1); i++) oProblem.initialiseSolution(i);
                 last_improvement_time = getElapsedTime();
-                System.out.println("No improvedment for 15 seconds reheating a bit");
+                System.out.println("No improvedment for 10 seconds reheating a bit");
                 System.out.println(simulatedAnnealing.toString());
             }
         }
