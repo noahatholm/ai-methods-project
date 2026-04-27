@@ -98,7 +98,7 @@ public class NHH extends HyperHeuristic {
                 if (candidate_cost < best_cost) {
                     best_cost = candidate_cost;
                     last_improvement_time = getElapsedTime();
-                    System.out.println("Found better cost! " + best_cost);
+                    //System.out.println("Found better cost! " + best_cost);
 
                     //Add this solution to  a random parent slot
                     int randomSlot = rng.nextInt(memorySize - 2) + 2;
@@ -119,8 +119,8 @@ public class NHH extends HyperHeuristic {
                 //Add some diversity to population
                 for (int i = 2; i < (memorySize / 2 + 1); i++) oProblem.initialiseSolution(i);
                 last_improvement_time = getElapsedTime();
-                System.out.println("No improvedment for 10 seconds reheating a bit");
-                System.out.println(simulatedAnnealing.toString());
+//                System.out.println("No improvedment for 10 seconds reheating a bit");
+//                System.out.println(simulatedAnnealing.toString());
             }
         }
 

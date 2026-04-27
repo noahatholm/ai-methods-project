@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -99,12 +100,13 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         return solutionToString(best_solution);
 	}
 
-	@Override
-	public boolean compareSolutions(int iSolutionIndexA, int iSolutionIndexB) {
+    @Override
+    public boolean compareSolutions(int iSolutionIndexA, int iSolutionIndexB) {
+        int[] repA = solution_memory[iSolutionIndexA].getSolutionRepresentation().getSolutionRepresentation();
+        int[] repB = solution_memory[iSolutionIndexB].getSolutionRepresentation().getSolutionRepresentation();
+        return Arrays.equals(repA, repB);
+    }
 
-        // TODO
-        return false;
-	}
 
 	@Override
 	public void copySolution(int iSolutionIndexFrom, int iSolutionIndexTo) {
@@ -263,12 +265,10 @@ public class OBRDomain extends ProblemDomain implements Visualisable, InLabPract
         solution_memory = new OBRSolution[iNewMemorySize];
 	}
 
-	@Override
-	public String solutionToString(int iSolutionIndex) {
-
-        // TODO
-        return null;
-	}
+    @Override
+    public String solutionToString(int iSolutionIndex) {
+        return solutionToString(solution_memory[iSolutionIndex]);
+    }
 
 	@Override
 	public String toString() {
