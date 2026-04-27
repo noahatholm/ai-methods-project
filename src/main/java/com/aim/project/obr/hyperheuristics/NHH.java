@@ -66,8 +66,9 @@ public class NHH extends HyperHeuristic {
             } else {
                 candidate_cost = oProblem.applyHeuristic(iHeuristicId, iCurrentSolution, iCandidateSolution); //apply mutation or hill climb
             }
-
             long endTime = System.nanoTime();
+
+
 
             // have to calc my own ms time cuz the milliseconds is buggy on my laptop
             double cpuTimeMs = Math.max(0.001, (endTime - startTime) / 1_000_000.0);
@@ -103,12 +104,13 @@ public class NHH extends HyperHeuristic {
 
                     //Add this solution to  a random parent slot
                     int randomSlot = rng.nextInt(memorySize - 2) + 2;
-                    oProblem.copySolution(iCurrentSolution, randomSlot);
+                    oProblem.copySolution(iCandidateSolution, randomSlot);
                 }
             }
 
             simulatedAnnealing.advanceTemperature(getElapsedTime());
             choiceFunction.updateWeights(getElapsedTime(), getTimeLimit());
+            updateDOSAndIOM(oProblem);
 
             //If no improvement has been made in a while likely stuck in local min
             if (getElapsedTime() - last_improvement_time > 15) {
@@ -129,6 +131,13 @@ public class NHH extends HyperHeuristic {
         OBRSolutionInterface oSolution = ((OBRDomain) oProblem).getBestSolution();
         SolutionPrinter oSolutionPrinter = new SolutionPrinter("NHH-out.csv");
         oSolutionPrinter.printSolution( ((OBRDomain) oProblem).getLoadedInstance().getSolutionAsListOfLocations(oSolution));
+    }
+
+    //Adjusts the DOS and IOM over time to hopefully get better results
+    private void updateDOSAndIOM(ProblemDomain oProblem) {
+        double ratio = (double) getElapsedTime() / getTimeLimit();
+        oProblem.setIntensityOfMutation(0.2 + (0.6 * ratio));
+        oProblem.setDepthOfSearch(0.2 + (0.8 * ratio));
     }
 
     @Override

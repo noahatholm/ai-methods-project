@@ -15,7 +15,7 @@ public class NHH_VisualRunner extends HH_Runner_Visual {
 
     public static void main(String [] args) {
 
-        int iInstanceId = 3;
+        int iInstanceId = 6;
         HH_Runner_Visual runner = new NHH_VisualRunner(iInstanceId);
 
         runner.run();
